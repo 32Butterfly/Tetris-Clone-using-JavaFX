@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class TetrisBlock extends Group {
 
-    private static final int SIZE = 60;  // Size of each square block
+    private static final int SIZE = 50;  // Size of each square block
 
     public TetrisBlock(Color color, Rectangle... rectangles) {
         for (Rectangle rectangle : rectangles) {

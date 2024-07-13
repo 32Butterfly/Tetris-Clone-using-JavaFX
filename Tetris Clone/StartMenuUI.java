@@ -1,7 +1,6 @@
 package org.example.tetrisclone;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -26,7 +25,6 @@ public class StartMenuUI {
     private HBox layout;
     private final int leftAnimation = 1;
     private final int rightAnimation = 2;
-    private static final int BLOCK_SIZE = 60;
 
     public StartMenuUI() {
         createStartButton();
@@ -59,7 +57,21 @@ public class StartMenuUI {
             title.getChildren().add(letter);
         }
 
-        title.setPadding(new Insets(0, 0, 0, 0));
+        SequentialTransition sequentialTransition = getSequentialTransition();
+        sequentialTransition.play();
+    }
+
+    private SequentialTransition getSequentialTransition() {
+        TranslateTransition upTransition = new TranslateTransition(Duration.seconds(1), title);
+        upTransition.setByY(-50); // Move up by 50 pixels
+
+        TranslateTransition downTransition = new TranslateTransition(Duration.seconds(1), title);
+        downTransition.setByY(50); // Move down by 50 pixels
+
+        // Create a sequential transition for up and down movement
+        SequentialTransition sequentialTransition = new SequentialTransition(title, upTransition, downTransition);
+        sequentialTransition.setCycleCount(SequentialTransition.INDEFINITE); // Repeat indefinitely
+        return sequentialTransition;
     }
 
     private void createStartButton() {
@@ -67,27 +79,21 @@ public class StartMenuUI {
         setButtonProperties(start);
     }
 
-    private void createCloseButton(){
+    private void createCloseButton() {
         close = new Button("Close");
-        close.setOnAction(event -> {
-            Platform.exit(); // Close the JavaFX application
-        });
+        close.setOnAction(event -> Platform.exit());
 
         setButtonProperties(close);
     }
 
-    private void createOptionButton(){
+    private void createOptionButton() {
         options = new Button("Options");
         setButtonProperties(options);
     }
 
     private void setButtonProperties(Button button) {
         button.setFont(Font.font("Impact", FontWeight.NORMAL, 44));
-        button.setStyle("-fx-focus-color: transparent; " +
-                "-fx-faint-focus-color: transparent;" +
-                "-fx-background-color: white;" +
-                "-fx-text-fill: black;" +
-                "-fx-background-radius: 30;");
+        button.getStyleClass().add("custom-button");
         button.setPadding(new Insets(10));
         button.setMinWidth(200);
         button.setMaxWidth(200);
@@ -99,80 +105,43 @@ public class StartMenuUI {
     private void buttonHoverEffect(Button button) {
         button.hoverProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                // Mouse entered button
-
-                button.setStyle("-fx-background-color: #CCCCCC; -fx-text-fill: black; -fx-background-radius: 30;");
-                button.setScaleX(1.10); // Increase size by 10% horizontally
-                button.setScaleY(1.10); // Increase size by 10% vertically
-            }
-            else {
-                // Mouse exited button
-                button.setStyle("-fx-background-color: white; -fx-text-fill: black; -fx-background-radius: 30;");
-                button.setScaleX(1.0); // Reset size
-                button.setScaleY(1.0); // Reset size
+                button.setScaleX(1.10);
+                button.setScaleY(1.10);
+            } else {
+                button.setScaleX(1.0);
+                button.setScaleY(1.0);
             }
         });
     }
 
-    private void createHighScore(){
+    private void createHighScore() {
         highScore = new Label("Highscore: 0 points");
         highScore.setFont(new Font("Impact", 44));
         highScore.setPadding(new Insets(30, 0, 0, 0));
     }
 
     private void createLayout() {
-        menuLayout = new VBox(30); // Spacing of 20 between elements
-        menuLayout.setAlignment(Pos.CENTER); // Center align the VBox
+        menuLayout = new VBox(30);
+        menuLayout.setAlignment(Pos.CENTER);
         menuLayout.getChildren().addAll(title, start, options, close, highScore);
         menuLayout.setPrefSize(660, 1080);
         BackgroundInitialize backgroundUI = new BackgroundInitialize();
         backgroundUI.createBackgroundForUI(menuLayout);
 
         leftAnimationPane = new Pane();
-        leftAnimationPane.setPrefSize(660, 1080); // Set a preferred size for the left animation pane
+        leftAnimationPane.setPrefSize(660, 1080);
 
         rightAnimationPane = new Pane();
-        rightAnimationPane.setPrefSize(660, 1080); // Set a preferred size for the right animation pane
+        rightAnimationPane.setPrefSize(660, 1080);
 
         layout = new HBox(20);
         layout.getChildren().addAll(leftAnimationPane, menuLayout, rightAnimationPane);
         layout.setAlignment(Pos.CENTER);
-
-       layout.setStyle("-fx-background-color: #444444;");
+        layout.setStyle("-fx-background-color: #444444;");
     }
 
     private void createFallingBlocksAnimation() {
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1.5), event -> {
-            TetrisBlock leftBlock = TetrisBlock.createRandomBlock();
-            leftAnimationPane.getChildren().add(leftBlock);
-            animateFallingBlock(leftBlock, leftAnimationPane, leftAnimation);
-
-            TetrisBlock rightBlock = TetrisBlock.createRandomBlock();
-            rightAnimationPane.getChildren().add(rightBlock);
-            animateFallingBlock(rightBlock, rightAnimationPane, rightAnimation);
-        }));
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
-    }
-
-    private void animateFallingBlock(TetrisBlock block, Pane animationPane, int animation) {
-        // Initialize startX with a default value
-        double startX = 0.0;
-
-        if (animation == 1 || animation == 2) {
-            //Calculate the maximum range within which startX can vary
-            double maxRange = animationPane.getWidth() - (4 * BLOCK_SIZE);
-
-            // Randomly determine the position of startX within the maximum range
-            startX = Math.random() * maxRange;
-        }
-
-        block.setLayoutX(startX);
-        block.setLayoutY(-BLOCK_SIZE * 4); // Start above the visible area
-
-        TranslateTransition transition = new TranslateTransition(Duration.seconds(15), block);
-        transition.setToY(animationPane.getHeight() + BLOCK_SIZE * 4); // End below the visible area
-        transition.setOnFinished(event -> animationPane.getChildren().remove(block));
-        transition.play();
+        BlockFallAnimationMenu blockFallAnimationMenu = new BlockFallAnimationMenu(leftAnimationPane, rightAnimationPane, leftAnimation, rightAnimation);
+        blockFallAnimationMenu.createFallingBlocksAnimation();
     }
 }
