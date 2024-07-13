@@ -8,13 +8,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import javafx.scene.text.TextFlow;
+import javafx.scene.text.*;
 import javafx.util.Duration;
 
 public class StartMenuUI {
@@ -28,9 +24,6 @@ public class StartMenuUI {
     private Pane leftAnimationPane;
     private Pane rightAnimationPane;
     private HBox layout;
-    private final int colourForStart = 1;
-    private final int colourForClose = 2;
-    private final int colourForOptions = 2;
     private final int leftAnimation = 1;
     private final int rightAnimation = 2;
     private static final int BLOCK_SIZE = 60;
@@ -61,76 +54,60 @@ public class StartMenuUI {
 
         for (int i = 0; i < labelText.length(); ++i) {
             Text letter = new Text(String.valueOf(labelText.charAt(i)));
-            letter.setFont(new Font("Impact", 96));
+            letter.setFont(Font.font("Impact", FontWeight.BOLD, 174));
             letter.setFill(colors[i % colors.length]);
             title.getChildren().add(letter);
         }
 
-        title.setPadding(new Insets(0, 0, 85, 0));
+        title.setPadding(new Insets(0, 0, 0, 0));
     }
 
     private void createStartButton() {
         start = new Button("Start");
-        start.setFont(new Font("Impact", 44));
-        start.setStyle(
-                "-fx-focus-color: transparent; " +
-                        "-fx-faint-focus-color: transparent;"
-        );
-
-        buttonHoverEffect(start, colourForStart);
+        setButtonProperties(start);
     }
 
     private void createCloseButton(){
         close = new Button("Close");
-        close.setFont(new Font("Impact", 44));
-        close.setStyle(
-                "-fx-focus-color: transparent; " +
-                        "-fx-faint-focus-color: transparent;" +
-                        "-fx-background-color: #FF0000;"+
-                        "-fx-text-fill: white"
-        );
-
         close.setOnAction(event -> {
             Platform.exit(); // Close the JavaFX application
         });
 
-        buttonHoverEffect(close, colourForClose);
+        setButtonProperties(close);
     }
 
     private void createOptionButton(){
         options = new Button("Options");
-        options.setFont(new Font("Impact", 44));
-        options.setStyle(
-                "-fx-focus-color: transparent; " +
-                        "-fx-faint-focus-color: transparent;" +
-                        "-fx-background-color: #FF0000;"+
-                        "-fx-text-fill: white"
-        );
-
-        buttonHoverEffect(options, colourForOptions);
+        setButtonProperties(options);
     }
 
-    private void buttonHoverEffect(Button button, int color) {
+    private void setButtonProperties(Button button) {
+        button.setFont(Font.font("Impact", FontWeight.NORMAL, 44));
+        button.setStyle("-fx-focus-color: transparent; " +
+                "-fx-faint-focus-color: transparent;" +
+                "-fx-background-color: white;" +
+                "-fx-text-fill: black;" +
+                "-fx-background-radius: 30;");
+        button.setPadding(new Insets(10));
+        button.setMinWidth(200);
+        button.setMaxWidth(200);
+        button.setPrefHeight(60);
+        button.setAlignment(Pos.CENTER);
+        buttonHoverEffect(button);
+    }
+
+    private void buttonHoverEffect(Button button) {
         button.hoverProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 // Mouse entered button
-                if (color == 1){
-                    button.setStyle("-fx-background-color: #DD7E9E; -fx-text-fill: white;");
-                }
-                else if(color == 2){
-                    button.setStyle("-fx-background-color: #FF3333; -fx-text-fill: white;");
-                }
+
+                button.setStyle("-fx-background-color: #CCCCCC; -fx-text-fill: black; -fx-background-radius: 30;");
                 button.setScaleX(1.10); // Increase size by 10% horizontally
                 button.setScaleY(1.10); // Increase size by 10% vertically
             }
             else {
                 // Mouse exited button
-                if (color == 1){
-                    button.setStyle("-fx-background-color: #DB7093; -fx-text-fill: white;");
-                }
-                else if (color == 2){
-                    button.setStyle("-fx-background-color: #FF0000; -fx-text-fill: white;");
-                }
+                button.setStyle("-fx-background-color: white; -fx-text-fill: black; -fx-background-radius: 30;");
                 button.setScaleX(1.0); // Reset size
                 button.setScaleY(1.0); // Reset size
             }
@@ -140,15 +117,16 @@ public class StartMenuUI {
     private void createHighScore(){
         highScore = new Label("Highscore: 0 points");
         highScore.setFont(new Font("Impact", 44));
-        highScore.setPadding(new Insets(70, 0, 0, 0));
+        highScore.setPadding(new Insets(30, 0, 0, 0));
     }
 
     private void createLayout() {
-        menuLayout = new VBox(20); // Spacing of 20 between elements
+        menuLayout = new VBox(30); // Spacing of 20 between elements
         menuLayout.setAlignment(Pos.CENTER); // Center align the VBox
         menuLayout.getChildren().addAll(title, start, options, close, highScore);
         menuLayout.setPrefSize(660, 1080);
-        createBackgroudForUI();
+        BackgroundInitialize backgroundUI = new BackgroundInitialize();
+        backgroundUI.createBackgroundForUI(menuLayout);
 
         leftAnimationPane = new Pane();
         leftAnimationPane.setPrefSize(660, 1080); // Set a preferred size for the left animation pane
@@ -160,38 +138,11 @@ public class StartMenuUI {
         layout.getChildren().addAll(leftAnimationPane, menuLayout, rightAnimationPane);
         layout.setAlignment(Pos.CENTER);
 
-       // layout.setStyle("-fx-background-color: #444444;");
+       layout.setStyle("-fx-background-color: #444444;");
     }
-
-    private void createBackgroudForUI(){
-        double vboxWidth = 660;
-        double vboxHeight = 1080;
-
-        try {
-            // Load the image from resources folder
-            Image backgroundImage = new Image(getClass().getResourceAsStream("/org/example/tetrisclone/Wallpaper.jpg"));
-
-            // Create the background size to cover the VBox completely
-            BackgroundSize backgroundSize = new BackgroundSize(vboxWidth, vboxHeight, false, false, true, true);
-
-            // Create the background image
-            BackgroundImage background = new BackgroundImage(
-                    backgroundImage,
-                    BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
-                    BackgroundPosition.DEFAULT, backgroundSize);  // Use the custom BackgroundSize
-
-            // Apply the background to your layout or pane
-            menuLayout.setBackground(new Background(background));
-        } catch (Exception e) {
-            System.err.println("Failed to load background image: " + e.getMessage());
-            e.printStackTrace();
-            // Handle the exception as needed
-        }
-    }
-
 
     private void createFallingBlocksAnimation() {
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(3), event -> {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1.5), event -> {
             TetrisBlock leftBlock = TetrisBlock.createRandomBlock();
             leftAnimationPane.getChildren().add(leftBlock);
             animateFallingBlock(leftBlock, leftAnimationPane, leftAnimation);

@@ -8,10 +8,8 @@ import java.util.Random;
 public class TetrisBlock extends Group {
 
     private static final int SIZE = 60;  // Size of each square block
-    private Color color;
 
     public TetrisBlock(Color color, Rectangle... rectangles) {
-        this.color = color;
         for (Rectangle rectangle : rectangles) {
             rectangle.setFill(color);
             getChildren().add(rectangle);
@@ -21,24 +19,15 @@ public class TetrisBlock extends Group {
     public static TetrisBlock createRandomBlock() {
         Random random = new Random();
         Color color = Color.color(random.nextDouble(), random.nextDouble(), random.nextDouble());
-        switch (random.nextInt(7)) {
-            case 0:
-                return createIBlock(color);
-            case 1:
-                return createJBlock(color);
-            case 2:
-                return createLBlock(color);
-            case 3:
-                return createOBlock(color);
-            case 4:
-                return createSBlock(color);
-            case 5:
-                return createTBlock(color);
-            case 6:
-                return createZBlock(color);
-            default:
-                return createIBlock(color);
-        }
+        return switch (random.nextInt(7)) {
+            case 1 -> createJBlock(color);
+            case 2 -> createLBlock(color);
+            case 3 -> createOBlock(color);
+            case 4 -> createSBlock(color);
+            case 5 -> createTBlock(color);
+            case 6 -> createZBlock(color);
+            default -> createIBlock(color);
+        };
     }
 
     private static TetrisBlock createIBlock(Color color) {
