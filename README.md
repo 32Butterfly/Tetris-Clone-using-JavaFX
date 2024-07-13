@@ -63,6 +63,4 @@ tetris-clone/
 ```
 
 ## License
-This project is licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License. You are free to use, share, and adapt the software as long as proper credit is given to the original author.
-
-See the [LICENSE](LICENSE) file for details.
+This project is licensed under the BSD 2-Clause License. You are free to use, share, and adapt the software under the following conditions: See the [LICENSE](LICENSE) file for details.
