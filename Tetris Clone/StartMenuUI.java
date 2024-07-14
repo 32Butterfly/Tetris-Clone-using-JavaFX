@@ -5,11 +5,13 @@ import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class StartMenuUI {
@@ -25,8 +27,10 @@ public class StartMenuUI {
     private HBox layout;
     private final int leftAnimation = 1;
     private final int rightAnimation = 2;
+    private final Stage primaryStage; // Reference to the primary stage
 
-    public StartMenuUI() {
+    public StartMenuUI(Stage primaryStage) {
+        this.primaryStage = primaryStage;
         createStartButton();
         createTitle();
         createOptionButton();
@@ -52,7 +56,7 @@ public class StartMenuUI {
 
         for (int i = 0; i < labelText.length(); ++i) {
             Text letter = new Text(String.valueOf(labelText.charAt(i)));
-            letter.setFont(Font.font("Impact", FontWeight.BOLD, 174));
+            letter.getStyleClass().add("title");
             letter.setFill(colors[i % colors.length]);
             title.getChildren().add(letter);
         }
@@ -76,6 +80,11 @@ public class StartMenuUI {
 
     private void createStartButton() {
         start = new Button("Start");
+        start.setOnAction(event -> {
+            GameUI gameUI = new GameUI();
+            Scene gameScene = gameUI.createGameScene();
+            primaryStage.setScene(gameScene);
+        });
         setButtonProperties(start);
     }
 
@@ -92,7 +101,6 @@ public class StartMenuUI {
     }
 
     private void setButtonProperties(Button button) {
-        button.setFont(Font.font("Impact", FontWeight.NORMAL, 44));
         button.getStyleClass().add("custom-button");
         button.setPadding(new Insets(10));
         button.setMinWidth(200);
@@ -116,7 +124,7 @@ public class StartMenuUI {
 
     private void createHighScore() {
         highScore = new Label("Highscore: 0 points");
-        highScore.setFont(new Font("Impact", 44));
+        highScore.getStyleClass().add("highscore");
         highScore.setPadding(new Insets(30, 0, 0, 0));
     }
 
@@ -124,24 +132,25 @@ public class StartMenuUI {
         menuLayout = new VBox(30);
         menuLayout.setAlignment(Pos.CENTER);
         menuLayout.getChildren().addAll(title, start, options, close, highScore);
-        menuLayout.setPrefSize(660, 1080);
-        BackgroundInitialize backgroundUI = new BackgroundInitialize();
-        backgroundUI.createBackgroundForUI(menuLayout);
+        menuLayout.setPrefSize(640, 1080);
+        menuLayout.getStyleClass().add("menu-background");
 
         leftAnimationPane = new Pane();
-        leftAnimationPane.setPrefSize(660, 1080);
+        leftAnimationPane.setPrefSize(640, 1080);
+        leftAnimationPane.getStyleClass().add("pane-background");
 
         rightAnimationPane = new Pane();
-        rightAnimationPane.setPrefSize(660, 1080);
+        rightAnimationPane.setPrefSize(640, 1080);
+        rightAnimationPane.getStyleClass().add("pane-background");
 
-        layout = new HBox(20);
+        layout = new HBox(0);
         layout.getChildren().addAll(leftAnimationPane, menuLayout, rightAnimationPane);
         layout.setAlignment(Pos.CENTER);
-        layout.setStyle("-fx-background-color: #444444;");
     }
 
     private void createFallingBlocksAnimation() {
-        BlockFallAnimationMenu blockFallAnimationMenu = new BlockFallAnimationMenu(leftAnimationPane, rightAnimationPane, leftAnimation, rightAnimation);
+        BlockFallAnimationMenu blockFallAnimationMenu = new BlockFallAnimationMenu(
+                leftAnimationPane, rightAnimationPane, leftAnimation, rightAnimation);
         blockFallAnimationMenu.createFallingBlocksAnimation();
     }
 }
