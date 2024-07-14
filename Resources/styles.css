@@ -5,9 +5,30 @@
     -fx-font-size: 44px;
     -fx-background-radius: 30;
 }
-
 .custom-button:hover{
     -fx-background-color: #CCCCCC;
     -fx-text-fill: black;
     -fx-background-radius: 30;
+}
+.title{
+    -fx-font-family: "Impact";
+    -fx-font-size: 174px;
+    font-weight: bold;
+}
+.highscore{
+   -fx-font-family: "Impact";
+   -fx-font-size: 50px;
+   -fx-text-fill: black;
+   padding: 30px 0px 0px 0px;
+}
+.menu-background{
+    -fx-background-image: url("Wallpaper.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+}
+.pane-background{
+    -fx-background-image: url("Cubes.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-position: center;
 }
