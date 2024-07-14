@@ -52,13 +52,10 @@ tetris-clone/
 │                     ├── BlockFallAnimationMenu.java
 │                     ├── TetrisBlock.java
 │                     ├── BackgroundInitialize.java
-│  └── resources/
-│      └──css
-│        └── styles.css
-│      └──org/
-│         └── example/
-│             └── tetrisclone/
-│                  └── Wallpaper.jpg
+│  └── resources/ 
+│        ├── styles.css
+│        ├── Wallpaper.jpg
+│        ├── Cubes.jpg
 └── 
 ```
 
