@@ -32,3 +32,24 @@
     -fx-background-size: cover;
     -fx-background-position: center;
 }
+.title-0 {
+    -fx-fill: red;
+}
+.title-1 {
+    -fx-fill: orange;
+}
+.title-2 {
+    -fx-fill: yellow;
+}
+.title-3 {
+    -fx-fill: green;
+}
+.title-4 {
+    -fx-fill: blue;
+}
+.title-5 {
+    -fx-fill: indigo;
+}
+.title-6 {
+    -fx-fill: violet;
+}
