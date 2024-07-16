@@ -3,6 +3,7 @@ package org.example.tetrisclone;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
@@ -10,16 +11,16 @@ import java.util.Random;
 
 public class BlockFallAnimationMenu {
 
-    private static final int BLOCK_SIZE = 50;
+    private static final byte BLOCK_SIZE = 50;
     private static final Duration ANIMATION_DURATION = Duration.seconds(10);
 
     private final Pane leftAnimationPane;
     private final Pane rightAnimationPane;
-    private final int leftAnimation;
-    private final int rightAnimation;
-    private Random random = new Random();
+    private final byte leftAnimation;
+    private final byte rightAnimation;
+    private final Random random = new Random();
 
-    public BlockFallAnimationMenu(Pane leftAnimationPane, Pane rightAnimationPane, int leftAnimation, int rightAnimation) {
+    public BlockFallAnimationMenu(Pane leftAnimationPane, Pane rightAnimationPane, byte leftAnimation, byte rightAnimation) {
         this.leftAnimationPane = leftAnimationPane;
         this.rightAnimationPane = rightAnimationPane;
         this.leftAnimation = leftAnimation;
@@ -27,7 +28,7 @@ public class BlockFallAnimationMenu {
     }
 
     public void createFallingBlocksAnimation() {
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1.5), event -> {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2.5), event -> {
             TetrisBlock leftBlock = TetrisBlock.createRandomBlock();
             leftAnimationPane.getChildren().add(leftBlock);
             animateFallingBlock(leftBlock, leftAnimationPane, leftAnimation);
@@ -41,22 +42,14 @@ public class BlockFallAnimationMenu {
         timeline.play();
     }
 
-    private void animateFallingBlock(TetrisBlock block, Pane animationPane, int animation) {
+    private void animateFallingBlock(TetrisBlock block, Pane animationPane, byte animation) {
         double startX = 0.0;
 
-        if (animation == 1 || animation == 2) {
-            double maxRange = animationPane.getWidth() - (4 * BLOCK_SIZE);
-            startX = random.nextFloat() * maxRange + BLOCK_SIZE;
-
-            // Ensure startX is at least 4 * BLOCK_SIZE
-            if (startX < 4 * BLOCK_SIZE ) {
-                startX = 4 * BLOCK_SIZE;
-            }
-            // Ensure startX does not exceed animationPane's width minus 4 * BLOCK_SIZE
-            if (startX > animationPane.getWidth() - 4 * BLOCK_SIZE ) {
-                startX = animationPane.getWidth() - 4 * BLOCK_SIZE;
-                System.out.println(startX);
-            }
+        if (animation == 1){
+            startX = leftSideAnimation(animationPane, block);
+        }
+        else if (animation == 2){
+            startX = rightSideAnimation(animationPane, block);
         }
 
         block.setLayoutX(startX);
@@ -64,7 +57,57 @@ public class BlockFallAnimationMenu {
 
         TranslateTransition transition = new TranslateTransition(ANIMATION_DURATION, block);
         transition.setToY(animationPane.getHeight() + BLOCK_SIZE);
-        transition.setOnFinished(event -> animationPane.getChildren().remove(block));
+        transition.setOnFinished(event -> {
+            Platform.runLater(() -> {
+                animationPane.getChildren().remove(block);
+                block.cleanup();
+                System.gc(); // Explicitly call garbage collection for testing
+            });
+        });
         transition.play();
+    }
+
+    private double leftSideAnimation(Pane animationPane, TetrisBlock block){
+        double maxRange;
+        if (block.getBlockType() == 'I') {
+            maxRange = animationPane.getWidth() - (4 * BLOCK_SIZE ); // Adjust max range for I block
+        }
+        else{
+            maxRange = animationPane.getWidth() - (3 * BLOCK_SIZE);
+        }
+
+        double startX = random.nextFloat() * maxRange + BLOCK_SIZE;
+
+        if (startX < 4 * BLOCK_SIZE ) {
+            startX = 4 * BLOCK_SIZE;
+        }
+
+        if (startX > maxRange) {
+            startX = maxRange;
+        }
+
+        return startX;
+    }
+
+    private double rightSideAnimation(Pane animationPane, TetrisBlock block) {
+        double maxRange;
+        if (block.getBlockType() == 'I') {
+            maxRange = animationPane.getWidth() - (4 * BLOCK_SIZE ); // Adjust max range for I block
+        }
+        else{
+            maxRange = animationPane.getWidth() - (3 * BLOCK_SIZE);
+        }
+
+        double startX = random.nextFloat() * maxRange + BLOCK_SIZE;
+
+        if (startX < 0 ) {
+            startX = 0;
+        }
+
+        if (startX > maxRange - 4 * BLOCK_SIZE) {
+            startX = maxRange - 4 * BLOCK_SIZE;
+        }
+
+        return startX;
     }
 }

@@ -2,12 +2,15 @@
 Evaldas Dmitrišin MIF VU Information Technologies upcoming 2nd year 3rd group student
 Solo project recreating the infamous game tetris using JavaFX
 
-Update 2:
--Background images now use css instead of being hardcoded. Easier to change and maintain
--Falling blocks now have a little safeguard making sure they don't spawn half on the screen or outside
-completely. However, the rightpane seems to not work currently will fix it later.
--Pressing start now acts as a way to switch scenes however, there's nothing there yet.
--Refactored the code slightly making the performance a little bit better.
+Update 3:
+-Huge update on the memory usage:
+-The code now when left running won't hoard not needed ram memory. Previously it would take 30mb each
+30 seconds leading to any computer eventually falling victim to this not the best piece of software
+-Adjusted the data types where needed instead of int usage of byte and making things final.
+-Update how the blocks fall. Both sides blocks now should not clip through the side or spawn outside, of
+visible area.
+-The title now is made completely from css instead of hard-coding the logic
+Further optimization coming soon as well as start of the actual game!
  */
 
 package org.example.tetrisclone;

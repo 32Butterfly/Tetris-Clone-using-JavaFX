@@ -8,25 +8,25 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class StartMenuUI {
 
-    private TextFlow title;
+    private final TextFlow title = new TextFlow();
     private Button start;
     private Button close;
     private Button options;
     private Label highScore;
-    private VBox menuLayout;
-    private Pane leftAnimationPane;
-    private Pane rightAnimationPane;
+    private final Pane leftAnimationPane = new Pane();
+    private final Pane rightAnimationPane = new Pane();
     private HBox layout;
-    private final int leftAnimation = 1;
-    private final int rightAnimation = 2;
     private final Stage primaryStage; // Reference to the primary stage
 
     public StartMenuUI(Stage primaryStage) {
@@ -46,34 +46,31 @@ public class StartMenuUI {
 
     private void createTitle() {
         String labelText = "Tetris";
-        Color[] colors = new Color[]{
-                Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.BLUE,
-                Color.INDIGO, Color.VIOLET
-        };
 
-        title = new TextFlow();
         title.setTextAlignment(TextAlignment.CENTER);
+        title.getStyleClass().add("title");
 
         for (int i = 0; i < labelText.length(); ++i) {
             Text letter = new Text(String.valueOf(labelText.charAt(i)));
-            letter.getStyleClass().add("title");
-            letter.setFill(colors[i % colors.length]);
+            letter.getStyleClass().add("title-" + i); // Add unique colour for each letter
             title.getChildren().add(letter);
         }
-
-        SequentialTransition sequentialTransition = getSequentialTransition();
-        sequentialTransition.play();
+        // Schedule the complex animation to start after the UI is loaded
+        Platform.runLater(() -> {
+            SequentialTransition sequentialTransition = getSequentialTransition();
+            sequentialTransition.play();
+        });
     }
 
     private SequentialTransition getSequentialTransition() {
-        TranslateTransition upTransition = new TranslateTransition(Duration.seconds(1), title);
+        TranslateTransition upTransition = new TranslateTransition(Duration.seconds(2), title);
         upTransition.setByY(-50); // Move up by 50 pixels
 
-        TranslateTransition downTransition = new TranslateTransition(Duration.seconds(1), title);
+        TranslateTransition downTransition = new TranslateTransition(Duration.seconds(2), title);
         downTransition.setByY(50); // Move down by 50 pixels
 
         // Create a sequential transition for up and down movement
-        SequentialTransition sequentialTransition = new SequentialTransition(title, upTransition, downTransition);
+        SequentialTransition sequentialTransition = new SequentialTransition(upTransition, downTransition);
         sequentialTransition.setCycleCount(SequentialTransition.INDEFINITE); // Repeat indefinitely
         return sequentialTransition;
     }
@@ -129,17 +126,15 @@ public class StartMenuUI {
     }
 
     private void createLayout() {
-        menuLayout = new VBox(30);
+        VBox menuLayout = new VBox(30);
         menuLayout.setAlignment(Pos.CENTER);
         menuLayout.getChildren().addAll(title, start, options, close, highScore);
         menuLayout.setPrefSize(640, 1080);
         menuLayout.getStyleClass().add("menu-background");
 
-        leftAnimationPane = new Pane();
         leftAnimationPane.setPrefSize(640, 1080);
         leftAnimationPane.getStyleClass().add("pane-background");
 
-        rightAnimationPane = new Pane();
         rightAnimationPane.setPrefSize(640, 1080);
         rightAnimationPane.getStyleClass().add("pane-background");
 
@@ -149,6 +144,8 @@ public class StartMenuUI {
     }
 
     private void createFallingBlocksAnimation() {
+        byte leftAnimation = 1;
+        byte rightAnimation = 2;
         BlockFallAnimationMenu blockFallAnimationMenu = new BlockFallAnimationMenu(
                 leftAnimationPane, rightAnimationPane, leftAnimation, rightAnimation);
         blockFallAnimationMenu.createFallingBlocksAnimation();
