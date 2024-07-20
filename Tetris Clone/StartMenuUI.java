@@ -3,9 +3,10 @@ package org.example.tetrisclone;
 import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -31,10 +32,8 @@ public class StartMenuUI {
 
     public StartMenuUI(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        createStartButton();
         createTitle();
-        createOptionButton();
-        createCloseButton();
+        createButtons();
         createHighScore();
         createLayout();
         createFallingBlocksAnimation();
@@ -55,7 +54,7 @@ public class StartMenuUI {
             letter.getStyleClass().add("title-" + i); // Add unique colour for each letter
             title.getChildren().add(letter);
         }
-        // Schedule the complex animation to start after the UI is loaded
+        // Schedule the animation to start after the whole UI is loaded
         Platform.runLater(() -> {
             SequentialTransition sequentialTransition = getSequentialTransition();
             sequentialTransition.play();
@@ -75,26 +74,25 @@ public class StartMenuUI {
         return sequentialTransition;
     }
 
-    private void createStartButton() {
-        start = new Button("Start");
-        start.setOnAction(event -> {
+    private void createButtons() {
+        start = createButton("Start", event -> {
             GameUI gameUI = new GameUI();
-            Scene gameScene = gameUI.createGameScene();
-            primaryStage.setScene(gameScene);
+            primaryStage.setScene(gameUI.getGame());
         });
-        setButtonProperties(start);
+
+        close = createButton("Close", event -> Platform.exit());
+
+        options = createButton("Options", null);
     }
 
-    private void createCloseButton() {
-        close = new Button("Close");
-        close.setOnAction(event -> Platform.exit());
-
-        setButtonProperties(close);
-    }
-
-    private void createOptionButton() {
-        options = new Button("Options");
-        setButtonProperties(options);
+    //pass in the text that the button will have and what happens when the button is pressed, null = nothing happens
+    private Button createButton(String text, EventHandler<ActionEvent> eventHandler) {
+        Button button = new Button(text);
+        if (eventHandler != null) {
+            button.setOnAction(eventHandler);
+        }
+        setButtonProperties(button);
+        return button;
     }
 
     private void setButtonProperties(Button button) {
@@ -129,13 +127,13 @@ public class StartMenuUI {
         VBox menuLayout = new VBox(30);
         menuLayout.setAlignment(Pos.CENTER);
         menuLayout.getChildren().addAll(title, start, options, close, highScore);
-        menuLayout.setPrefSize(640, 1080);
+        menuLayout.setPrefSize(660,1080);
         menuLayout.getStyleClass().add("menu-background");
 
-        leftAnimationPane.setPrefSize(640, 1080);
+        leftAnimationPane.setPrefSize(660,1080);
         leftAnimationPane.getStyleClass().add("pane-background");
 
-        rightAnimationPane.setPrefSize(640, 1080);
+        rightAnimationPane.setPrefSize(660,1080);
         rightAnimationPane.getStyleClass().add("pane-background");
 
         layout = new HBox(0);

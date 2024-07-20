@@ -57,13 +57,11 @@ public class BlockFallAnimationMenu {
 
         TranslateTransition transition = new TranslateTransition(ANIMATION_DURATION, block);
         transition.setToY(animationPane.getHeight() + BLOCK_SIZE);
-        transition.setOnFinished(event -> {
-            Platform.runLater(() -> {
-                animationPane.getChildren().remove(block);
-                block.cleanup();
-                System.gc(); // Explicitly call garbage collection for testing
-            });
-        });
+        transition.setOnFinished(event -> Platform.runLater(() -> {
+            animationPane.getChildren().remove(block);
+            block.cleanup();
+            System.gc(); // Explicitly call garbage collection for removing and collecting from the block memory
+        }));
         transition.play();
     }
 
@@ -73,7 +71,7 @@ public class BlockFallAnimationMenu {
             maxRange = animationPane.getWidth() - (4 * BLOCK_SIZE ); // Adjust max range for I block
         }
         else{
-            maxRange = animationPane.getWidth() - (3 * BLOCK_SIZE);
+            maxRange = animationPane.getWidth() - (3 * BLOCK_SIZE + 25);
         }
 
         double startX = random.nextFloat() * maxRange + BLOCK_SIZE;

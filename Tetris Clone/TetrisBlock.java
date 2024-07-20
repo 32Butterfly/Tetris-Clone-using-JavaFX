@@ -10,7 +10,7 @@ public class TetrisBlock extends Group {
     private static final byte SIZE = 50;  // Size of each square block
     private final char blockType;
     private static final Random random = new Random();
-    private TetrisBlock self;
+    private final TetrisBlock self;
 
     public TetrisBlock(Color color, char blockType, Rectangle... rectangles) {
         this.blockType = blockType;  // Set the block type
@@ -93,10 +93,38 @@ public class TetrisBlock extends Group {
                 new Rectangle(SIZE, SIZE, SIZE, SIZE),
                 new Rectangle(2 * SIZE, SIZE, SIZE, SIZE));
     }
-
     public void cleanup() {
         // Clear all children (Rectangles)
-        getChildren().clear();
-        self = null;
+        getChildren().remove(self);
+    }
+
+    public double getWidth() {
+        double minX = Double.MAX_VALUE;
+        double maxX = Double.MIN_VALUE;
+
+        for (var node : getChildren()) {
+            if (node instanceof Rectangle) {
+                Rectangle rectangle = (Rectangle) node;
+                minX = Math.min(minX, rectangle.getX());
+                maxX = Math.max(maxX, rectangle.getX() + SIZE);
+            }
+        }
+
+        return maxX - minX;
+    }
+
+    public double getHeight() {
+        double minY = Double.MAX_VALUE;
+        double maxY = Double.MIN_VALUE;
+
+        for (var node : getChildren()) {
+            if (node instanceof Rectangle) { //see if the object is a rectangle
+                Rectangle rectangle = (Rectangle) node;
+                minY = Math.min(minY, rectangle.getY());
+                maxY = Math.max(maxY, rectangle.getY() + SIZE);
+            }
+        }
+
+        return maxY - minY;
     }
 }
