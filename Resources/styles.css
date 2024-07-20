@@ -53,3 +53,8 @@
 .title-6 {
     -fx-fill: violet;
 }
+.game-area{
+    -fx-border-color: black; /* Black border */
+    -fx-border-width: 2px; /* 2 pixels wide */
+    -fx-border-style: solid; /* Solid border */
+}
